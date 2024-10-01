@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إنشاء حجز</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #34495e;
+            margin: 5px 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 20px;
+            display: block;
+        }
+        input[type="text"],
+        input[type="file"],
+        input[type="date"],
+        input[type="time"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 45%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إنشاء حجز جديد</h1>
+        <label for="bookingCode">كود الحجز:</label>
+        <input type="text" id="bookingCode" placeholder="أدخل كود الحجز">
+
+        <label for="firstName">الاسم الأول:</label>
+        <input type="text" id="firstName" placeholder="أدخل الاسم الأول">
+
+        <label for="lastName">اسم العائلة:</label>
+        <input type="text" id="lastName" placeholder="أدخل اسم العائلة">
+
+        <label for="bookingDate">تاريخ الحجز:</label>
+        <input type="date" id="bookingDate">
+
+        <label for="arrivalTime">وقت الوصول:</label>
+        <input type="time" id="arrivalTime">
+
+        <label for="departureTime">وقت المغادرة:</label>
+        <input type="time" id="departureTime">
+
+        <label for="price">السعر:</label>
+        <input type="text" id="price" placeholder="أدخل السعر">
+
+        <label for="note">ملاحظات:</label>
+        <input type="text" id="note" placeholder="أدخل ملاحظات">
+
+        <label for="logo">تحميل الشعار:</label>
+        <input type="file" id="logo" accept="image/*">
+
+        <button id="saveButton">حفظ الحجز</button>
+    </div>
+</body>
+</html>

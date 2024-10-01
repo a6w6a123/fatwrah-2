@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشتريات الشهر</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        h1 {
+            text-align: center;
+        }
+        button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .total {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>جدول مشتريات الشهر</h1>
+    <div class="total" id="totalPurchases">إجمالي المشتريات: 0.00 ر.س</div>
+    <table>
+        <thead>
+            <tr>
+                <th>كود الفاتورة</th>
+                <th>التاريخ</th>
+                <th>اسم المنتج</th>
+                <th>المبلغ</th>
+            </tr>
+        </thead>
+        <tbody id="purchasesTableBody">
+            <!-- سيتم إضافة البيانات هنا بواسطة JavaScript -->
+        </tbody>
+    </table>
+    <button onclick="printPage()">طباعة</button>
+    <button onclick="window.history.back()">عودة</button>
+
+    <script>
+        function loadMonthlyPurchases() {
+            const month = new URLSearchParams(window.location.search).get('month') || new Date().getMonth();
+            const invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            const currentYear = new Date().getFullYear();
+            const tableBody = document.getElementById('purchasesTableBody');
+            const totalPurchases = document.getElementById('totalPurchases');
+            let total = 0;
+
+            tableBody.innerHTML = ''; // مسح المحتوى السابق
+
+            invoices.forEach(invoice => {
+                const invoiceDate = new Date(invoice.date);
+                if (invoiceDate.getFullYear() === currentYear && invoiceDate.getMonth() == month) {
+                    invoice.products.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${invoice.code}</td>
+                            <td>${invoice.date}</td>
+                            <td>${product.name}</td>
+                            <td>${product.price.toFixed(2)} ر.س</td>
+                        `;
+                        tableBody.appendChild(row);
+                        total += parseFloat(product.price); // إضافة المبلغ إلى الإجمالي
+                    });
+                }
+            });
+
+            totalPurchases.textContent = `إجمالي المشتريات: ${total.toFixed(2)} ر.س`; // تحديث الإجمالي
+
+            if (tableBody.innerHTML === '') {
+                tableBody.innerHTML = '<tr><td colspan="4">لا توجد مشتريات لهذا الشهر</td></tr>';
+            }
+        }
+
+        function printPage() {
+            window.print(); // استدعاء دالة الطباعة
+        }
+
+        window.onload = loadMonthlyPurchases; // تحميل المشتريات عند تحميل الصفحة
+    </script>
+</body>
+</html>

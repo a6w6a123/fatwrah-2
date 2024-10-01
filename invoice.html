@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض فاتورة المشتريات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h3 {
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            margin: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>فاتورة المشتريات</h1>
+        <div id="invoice-details"></div>
+        <button onclick="window.print()">طباعة الفاتورة</button>
+        <button onclick="window.location.href='index.html'">العودة إلى الصفحة الرئيسية</button>
+    </div>
+
+    <script>
+        function displayInvoice() {
+            const invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceIndex = urlParams.get('index');
+
+            if (invoices.length > 0 && invoiceIndex !== null) {
+                const invoice = invoices[invoiceIndex];
+                const invoiceDetails = `
+                    <h3>اسم الفاتورة: ${invoice.invoiceName}</h3>
+                    <p>اسم العميل: ${invoice.clientName}</p>
+                    <p>تاريخ البداية: ${invoice.startDate}</p>
+                    <p>تاريخ النهاية: ${invoice.endDate}</p>
+                    <h4>تفاصيل المنتجات</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم المنتج</th>
+                                <th>سعر المنتج</th>
+                                <th>ملاحظة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${invoice.products.map(product => `
+                                <tr>
+                                    <td>${product.productName}</td>
+                                    <td>${product.productPrice.toFixed(2)}</td>
+                                    <td>${product.productNote || ''}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <h4>الإجمالي: ${invoice.total.toFixed(2)} ريال</h4>
+                `;
+                document.getElementById('invoice-details').innerHTML = invoiceDetails;
+            } else {
+                document.getElementById('invoice-details').innerHTML = "<p>لم يتم العثور على الفاتورة.</p>";
+            }
+        }
+
+        displayInvoice();
+    </script>
+</body>
+</html>

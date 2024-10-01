@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض فواتير المشتريات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>فواتير المشتريات</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>اسم الفاتورة</th>
+                    <th>اسم العميل</th>
+                    <th>تاريخ البداية</th>
+                    <th>تاريخ النهاية</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody id="invoice-list"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function displayInvoices() {
+            const invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            const invoiceList = document.getElementById('invoice-list');
+            invoiceList.innerHTML = '';
+
+            invoices.forEach((invoice, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.invoiceName}</td>
+                    <td>${invoice.clientName}</td>
+                    <td>${invoice.startDate}</td>
+                    <td>${invoice.endDate}</td>
+                    <td>
+                        <button onclick="viewInvoice(${index})">عرض</button>
+                        <button onclick="editInvoice(${index})">تعديل</button>
+                        <button onclick="deleteInvoice(${index})">حذف</button>
+                    </td>
+                `;
+                invoiceList.appendChild(row);
+            });
+        }
+
+        function viewInvoice(index) {
+            window.location.href = `invoice.html?index=${index}`;
+        }
+
+        function editInvoice(index) {
+            // قم بإعادة توجيه المستخدم إلى صفحة تعديل الفاتورة (يجب أن تقوم بإنشاء هذه الصفحة)
+            window.location.href = `edit-invoice.html?index=${index}`;
+        }
+
+        function deleteInvoice(index) {
+            const invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            invoices.splice(index, 1); // إزالة الفاتورة من القائمة
+            localStorage.setItem('purchaseInvoices', JSON.stringify(invoices)); // تحديث التخزين المحلي
+            displayInvoices(); // إعادة عرض الفواتير
+        }
+
+        displayInvoices();
+    </script>
+</body>
+</html>

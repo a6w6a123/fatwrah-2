@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .statistics {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>منصة إدارة الفواتير</h1>
+    
+    <button onclick="window.location.href='create-purchase-invoice.html'">إنشاء فاتورة مشتريات</button>
+    <button onclick="window.location.href='create-booking-invoice.html'">إنشاء فاتورة حجز</button>
+    <button onclick="window.location.href='view-purchase-invoices.html'">عرض فواتير المشتريات</button>
+    <button onclick="window.location.href='view-booking-invoices.html'">عرض فواتير الحجوزات</button>
+    <button onclick="window.location.href='monthly-purchases.html'">عرض مشتريات الشهر</button> <!-- زر لعرض مشتريات الشهر -->
+
+    <div class="statistics">
+        <h2>إجمالي المشتريات خلال الشهر</h2>
+        <select id="monthSelect" onchange="calculateTotalPurchases()">
+            <option value="0">يناير</option>
+            <option value="1">فبراير</option>
+            <option value="2">مارس</option>
+            <option value="3">أبريل</option>
+            <option value="4">مايو</option>
+            <option value="5">يونيو</option>
+            <option value="6">يوليو</option>
+            <option value="7">أغسطس</option>
+            <option value="8">سبتمبر</option>
+            <option value="9">أكتوبر</option>
+            <option value="10">نوفمبر</option>
+            <option value="11">ديسمبر</option>
+        </select>
+        <p id="totalPurchases">0.00 ر.س</p>
+    </div>
+
+    <script>
+        function calculateTotalPurchases() {
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            const currentYear = new Date().getFullYear();
+            const total = invoices.reduce((sum, invoice) => {
+                const invoiceDate = new Date(invoice.date); // assuming each invoice has a 'date' property
+                // تحقق من أن الفاتورة تتعلق بالشهر والسنة المحددين
+                if (invoiceDate.getFullYear() === currentYear && invoiceDate.getMonth() === month) {
+                    return sum + parseFloat(invoice.totalPrice || 0); // assuming 'totalPrice' is the property for the total amount
+                }
+                return sum;
+            }, 0);
+
+            document.getElementById('totalPurchases').textContent = total.toFixed(2) + ' ر.س';
+        }
+
+        window.onload = calculateTotalPurchases; // حساب الإجمالي عند تحميل الصفحة
+    </script>
+</body>
+</html>
