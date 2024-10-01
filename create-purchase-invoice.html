@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الصفحة الرئيسية</title>
+    <title>إنشاء فاتورة مشتريات</title>
+    <link rel="stylesheet" href="styles.css"> <!-- تأكد من وجود هذا الملف -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,78 +13,156 @@
             background-color: #f5f5f5;
             padding: 20px;
         }
-        button {
-            padding: 10px 20px;
-            margin: 20px;
-            font-size: 18px;
-            border-radius: 5px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .stats {
-            margin-top: 30px;
-            font-size: 20px;
+        h1 {
             color: #333;
         }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: right; /* للمحاذاة مع الاتجاه من اليمين لليسار */
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
         select {
+            width: 100%;
             padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* لتضمن أن البادينج لا يؤثر على الحجم الكلي */
+        }
+        .product {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 16px;
-            margin: 20px;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .remove-product {
+            background-color: #f44336;
+            margin-left: 10px;
+        }
+        .remove-product:hover {
+            background-color: #d32f2f;
         }
     </style>
 </head>
 <body>
-    <h1>منصة إدارة الفواتير</h1>
-    <button onclick="window.location.href='create-purchase-invoice.html'">إنشاء فاتورة مشتريات</button>
-    <button onclick="window.location.href='create-booking-invoice.html'">إنشاء فاتورة حجز</button>
-    <button onclick="window.location.href='view-purchase-invoices.html'">عرض فواتير المشتريات</button>
-    <button onclick="window.location.href='view-booking-invoices.html'">عرض فواتير الحجوزات</button>
 
-    <div class="stats">
-        <h2>إحصائيات المشتريات</h2>
-        <label for="monthSelect">اختر الشهر:</label>
-        <select id="monthSelect" onchange="calculateTotalPurchases()">
-            <option value="">اختر شهراً</option>
-            <option value="1">يناير</option>
-            <option value="2">فبراير</option>
-            <option value="3">مارس</option>
-            <option value="4">أبريل</option>
-            <option value="5">مايو</option>
-            <option value="6">يونيو</option>
-            <option value="7">يوليو</option>
-            <option value="8">أغسطس</option>
-            <option value="9">سبتمبر</option>
-            <option value="10">أكتوبر</option>
-            <option value="11">نوفمبر</option>
-            <option value="12">ديسمبر</option>
-        </select>
-        <p id="totalPurchases">إجمالي المشتريات: 0 ريال</p>
+    <div class="container">
+        <h1>إنشاء فاتورة مشتريات</h1>
+        <div class="form-group">
+            <label for="clientName">اسم العميل:</label>
+            <input type="text" id="clientName" required>
+        </div>
+        <div class="form-group">
+            <label for="invoiceDate">تاريخ الفاتورة:</label>
+            <input type="date" id="invoiceDate" required>
+        </div>
+        <div class="form-group">
+            <label for="invoiceDueDate">تاريخ استحقاق الفاتورة:</label>
+            <input type="date" id="invoiceDueDate" required>
+        </div>
+
+        <h2>المنتجات</h2>
+        <div id="productList"></div>
+        <button class="button" onclick="addProduct()">إضافة منتج</button>
+
+        <h3>الإجمالي: <span id="totalAmount">0</span> ريال</h3>
+        <button class="button" onclick="saveInvoice()">حفظ الفاتورة</button>
     </div>
 
     <script>
-        // دالة لحساب إجمالي المشتريات بناءً على الشهر المحدد
-        function calculateTotalPurchases() {
-            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
-            const selectedMonth = parseInt(document.getElementById('monthSelect').value);
-            let total = 0;
+        let total = 0;
 
-            purchaseInvoices.forEach(invoice => {
-                const invoiceDate = new Date(invoice.date); // افترض أن تاريخ الفاتورة موجود
-                if (selectedMonth && invoiceDate.getMonth() + 1 === selectedMonth) { // تحقق من تطابق الشهر
-                    total += invoice.totalPrice; // جمع الأسعار
-                }
-            });
-
-            document.getElementById('totalPurchases').innerText = `إجمالي المشتريات: ${total} ريال`;
+        function addProduct() {
+            const productContainer = document.createElement('div');
+            productContainer.className = 'product';
+            productContainer.innerHTML = `
+                <div class="form-group">
+                    <label for="productName">اسم المنتج:</label>
+                    <input type="text" class="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">السعر:</label>
+                    <input type="number" class="productPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="productNote">ملاحظة:</label>
+                    <textarea class="productNote" rows="2" placeholder="أضف ملاحظة هنا..."></textarea>
+                </div>
+                <button class="button remove-product" onclick="removeProduct(this)">حذف المنتج</button>
+            `;
+            document.getElementById('productList').appendChild(productContainer);
         }
 
-        // استدعاء دالة حساب إجمالي المشتريات عند تحميل الصفحة
-        window.onload = calculateTotalPurchases;
+        function removeProduct(button) {
+            const productContainer = button.parentElement;
+            productContainer.remove();
+            calculateTotal();
+        }
+
+        function saveInvoice() {
+            const clientName = document.getElementById('clientName').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            const invoiceDueDate = document.getElementById('invoiceDueDate').value;
+
+            const products = Array.from(document.querySelectorAll('.product')).map(product => {
+                const name = product.querySelector('.productName').value;
+                const price = parseFloat(product.querySelector('.productPrice').value) || 0;
+                const note = product.querySelector('.productNote').value;
+                return { name, price, note };
+            });
+
+            const invoiceData = {
+                clientName,
+                invoiceDate,
+                invoiceDueDate,
+                products,
+                total
+            };
+
+            console.log("تم حفظ الفاتورة:", invoiceData);
+            alert("تم حفظ الفاتورة بنجاح!");
+        }
+
+        function calculateTotal() {
+            total = 0;
+            const prices = document.querySelectorAll('.productPrice');
+            prices.forEach(price => {
+                total += parseFloat(price.value) || 0;
+            });
+            document.getElementById('totalAmount').textContent = total;
+        }
+
+        document.addEventListener('input', calculateTotal);
     </script>
+
 </body>
 </html>
